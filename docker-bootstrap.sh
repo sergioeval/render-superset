@@ -1,18 +1,29 @@
 #!/bin/bash
+set -e
+
+# Wait for database to be ready (useful for Render's managed databases)
+if [ -n "$DATABASE_URL" ]; then
+    echo "Waiting for database to be ready..."
+    sleep 5
+fi
 
 # Initialize Superset DB
+echo "Initializing Superset database..."
 superset db upgrade
 
 # Create admin user if not exists
+echo "Creating admin user..."
 superset fab create-admin \
-    --username admin \
-    --firstname Superset \
-    --lastname Admin \
-    --email admin@superset.com \
-    --password admin || true
+    --username ${SUPERSET_ADMIN_USERNAME:-admin} \
+    --firstname ${SUPERSET_ADMIN_FIRSTNAME:-Superset} \
+    --lastname ${SUPERSET_ADMIN_LASTNAME:-Admin} \
+    --email ${SUPERSET_ADMIN_EMAIL:-admin@superset.com} \
+    --password ${SUPERSET_ADMIN_PASSWORD:-admin} || true
 
 # Load default roles and permissions
+echo "Initializing Superset..."
 superset init
 
 # Start the server
-superset run -h 0.0.0.0 -p 8088
+echo "Starting Superset server..."
+superset run -h 0.0.0.0 -p ${PORT:-8088} --with-threads --reload --debugger
