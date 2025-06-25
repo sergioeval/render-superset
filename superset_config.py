@@ -14,6 +14,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
 
 # Database configuration
 # For Render, you'll typically use a managed PostgreSQL database
+# For local development, you can use SQLite: sqlite:///superset.db
+# The image includes psycopg2-binary for PostgreSQL support
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///superset.db')
 
 # Redis configuration for caching

@@ -6,6 +6,9 @@ ENV SUPERSET_ENV=production
 ENV PYTHONPATH=/app/pythonpath
 ENV SUPERSET_CONFIG_PATH=/app/pythonpath/superset_config.py
 
+# Install PostgreSQL dependencies
+RUN pip install --no-cache-dir psycopg2-binary
+
 # Create pythonpath directory
 RUN mkdir -p /app/pythonpath
 

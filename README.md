@@ -11,6 +11,7 @@ A custom Apache Superset Docker image optimized for deployment on Render.
 - Security best practices
 - Render-optimized configuration
 - Console-only logging for containerized environments
+- PostgreSQL support with psycopg2-binary
 
 ## Deployment on Render
 
@@ -74,6 +75,7 @@ For production, use Render's managed PostgreSQL service:
 1. Create a new **PostgreSQL** service in Render
 2. Copy the connection string to your `DATABASE_URL` environment variable
 3. The database will be automatically initialized on first run
+4. **Note**: The image includes `psycopg2-binary` for PostgreSQL connectivity
 
 ### 5. Redis (Optional but Recommended)
 
@@ -142,6 +144,13 @@ The `superset_config.py` file contains all the configuration settings. Key featu
 - **Features**: Native filters, RBAC, template processing
 - **Logging**: Console-only logging (no file logging to avoid permission issues)
 
+## Dependencies
+
+The Docker image includes:
+- **psycopg2-binary**: PostgreSQL adapter for Python
+- **Redis support**: For caching and Celery tasks
+- **All standard Superset dependencies**
+
 ## Troubleshooting
 
 ### Common Issues
@@ -150,6 +159,7 @@ The `superset_config.py` file contains all the configuration settings. Key featu
    - Ensure `DATABASE_URL` is correctly formatted
    - Check if database service is running
    - Verify network connectivity
+   - **PostgreSQL**: The image includes `psycopg2-binary` for PostgreSQL support
 
 2. **Permission Errors**
    - The configuration uses console-only logging to avoid file permission issues
@@ -169,6 +179,10 @@ The `superset_config.py` file contains all the configuration settings. Key featu
    - The configuration now uses console-only logging
    - No file logging to avoid permission issues in containerized environments
    - All logs are sent to stdout/stderr for proper container logging
+
+6. **ModuleNotFoundError: No module named 'psycopg2' (RESOLVED)**
+   - The Dockerfile now installs `psycopg2-binary` for PostgreSQL support
+   - This dependency is automatically included in the image
 
 ### Logs
 
