@@ -26,4 +26,4 @@ superset init
 
 # Start the server
 echo "Starting Superset server..."
-superset run -h 0.0.0.0 -p ${PORT:-8088} --with-threads --reload --debugger
+superset run -h 0.0.0.0 -p ${PORT:-8088} --with-threads --reload --debugger 

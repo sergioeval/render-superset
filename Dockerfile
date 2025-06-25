@@ -15,12 +15,14 @@ RUN mkdir -p /app/pythonpath
 # Copy configuration file
 COPY superset_config.py /app/pythonpath/superset_config.py
 
-# Superset needs the database to be initialized on first run
-COPY docker-bootstrap.sh /app/docker-bootstrap.sh
-RUN chmod +x /app/docker-bootstrap.sh
+# Copy bootstrap script
+COPY bootstrap.sh /app/bootstrap.sh
+
+# Make bootstrap script executable
+RUN chmod +x /app/bootstrap.sh
 
 # Default port
 EXPOSE 8088
 
 # Start Superset
-CMD ["/app/docker-bootstrap.sh"]
+CMD ["/app/bootstrap.sh"]

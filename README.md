@@ -151,7 +151,7 @@ The `superset_config.py` file contains all the configuration settings. Key featu
    - Verify network connectivity
 
 2. **Permission Errors**
-   - Ensure proper file permissions on `docker-bootstrap.sh`
+   - Ensure proper file permissions on `bootstrap.sh`
    - Check if user has write access to mounted volumes
 
 3. **Port Issues**
