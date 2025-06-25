@@ -10,6 +10,7 @@ A custom Apache Superset Docker image optimized for deployment on Render.
 - Celery task queue integration
 - Security best practices
 - Render-optimized configuration
+- Console-only logging for containerized environments
 
 ## Deployment on Render
 
@@ -139,7 +140,7 @@ The `superset_config.py` file contains all the configuration settings. Key featu
 - **Caching**: Redis-based caching
 - **Security**: CSRF protection, secure cookies
 - **Features**: Native filters, RBAC, template processing
-- **Logging**: File-based logging with rotation
+- **Logging**: Console-only logging (no file logging to avoid permission issues)
 
 ## Troubleshooting
 
@@ -151,6 +152,7 @@ The `superset_config.py` file contains all the configuration settings. Key featu
    - Verify network connectivity
 
 2. **Permission Errors**
+   - The configuration uses console-only logging to avoid file permission issues
    - Ensure proper file permissions on `bootstrap.sh`
    - Check if user has write access to mounted volumes
 
@@ -163,12 +165,18 @@ The `superset_config.py` file contains all the configuration settings. Key featu
    - Consider increasing Render's memory allocation
    - Monitor resource usage in Render dashboard
 
+5. **Logging Permission Errors (RESOLVED)**
+   - The configuration now uses console-only logging
+   - No file logging to avoid permission issues in containerized environments
+   - All logs are sent to stdout/stderr for proper container logging
+
 ### Logs
 
 Check Render logs for detailed error information:
 - Go to your service dashboard
 - Click on "Logs" tab
 - Look for error messages during startup
+- All Superset logs will appear in the console output
 
 ## Security Considerations
 

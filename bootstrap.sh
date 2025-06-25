@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+echo "Starting Superset bootstrap process..."
+
 # Wait for database to be ready (useful for Render's managed databases)
 if [ -n "$DATABASE_URL" ]; then
     echo "Waiting for database to be ready..."
@@ -25,5 +27,5 @@ echo "Initializing Superset..."
 superset init
 
 # Start the server
-echo "Starting Superset server..."
-superset run -h 0.0.0.0 -p ${PORT:-8088} --with-threads --reload --debugger 
+echo "Starting Superset server on port ${PORT:-8088}..."
+exec superset run -h 0.0.0.0 -p ${PORT:-8088} --with-threads --reload --debugger 
