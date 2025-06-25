@@ -18,9 +18,6 @@ COPY superset_config.py /app/pythonpath/superset_config.py
 # Copy bootstrap script
 COPY bootstrap.sh /app/bootstrap.sh
 
-# Make bootstrap script executable
-RUN chmod +x /app/bootstrap.sh
-
 # Default port
 EXPOSE 8088
 
