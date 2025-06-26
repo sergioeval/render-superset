@@ -4,14 +4,15 @@ A custom Apache Superset Docker image optimized for deployment on Render.
 
 ## Features
 
-- Based on official Apache Superset image
+- Based on official Apache Superset image with PostgreSQL support
 - Environment variable configuration
 - Redis caching support
 - Celery task queue integration
 - Security best practices
 - Render-optimized configuration
 - Console-only logging for containerized environments
-- PostgreSQL support with psycopg2-binary
+- PostgreSQL support included out of the box
+- SQLite support for development/testing
 
 ## Deployment on Render
 
@@ -33,11 +34,15 @@ Set these environment variables in your Render service:
 
 #### Required Variables
 ```bash
-# Database (use Render's managed PostgreSQL)
+# Security (required for all deployments)
+SECRET_KEY=your-very-long-secret-key-here
+
+# Database (choose one):
+# Option 1: PostgreSQL (recommended for production)
 DATABASE_URL=postgresql://user:password@host:port/database
 
-# Security
-SECRET_KEY=your-very-long-secret-key-here
+# Option 2: SQLite (for development/testing - no DATABASE_URL needed)
+# The app will automatically use SQLite in /tmp/superset.db
 ```
 
 #### Optional Variables
@@ -71,11 +76,16 @@ openssl rand -base64 42
 
 ### 4. Database Setup
 
-For production, use Render's managed PostgreSQL service:
+#### For Production (Recommended)
+Use Render's managed PostgreSQL service:
 1. Create a new **PostgreSQL** service in Render
 2. Copy the connection string to your `DATABASE_URL` environment variable
 3. The database will be automatically initialized on first run
-4. **Note**: The image includes `psycopg2-binary` for PostgreSQL connectivity
+
+#### For Development/Testing
+- **No DATABASE_URL needed** - the app will automatically use SQLite
+- SQLite database will be created in `/tmp/superset.db`
+- **Note**: SQLite data will be lost when the container restarts
 
 ### 5. Redis (Optional but Recommended)
 
@@ -94,9 +104,14 @@ For better performance, add a Redis service:
 # Build the image
 docker build -t render-superset .
 
-# Run with environment variables
+# Run with SQLite (development)
 docker run -p 8088:8088 \
-  -e DATABASE_URL=sqlite:///superset.db \
+  -e SECRET_KEY=your-secret-key \
+  render-superset
+
+# Run with PostgreSQL
+docker run -p 8088:8088 \
+  -e DATABASE_URL=postgresql://user:password@host:port/database \
   -e SECRET_KEY=your-secret-key \
   render-superset
 ```
@@ -147,7 +162,7 @@ The `superset_config.py` file contains all the configuration settings. Key featu
 ## Dependencies
 
 The Docker image includes:
-- **psycopg2-binary**: PostgreSQL adapter for Python
+- **PostgreSQL support**: Built into the base image
 - **Redis support**: For caching and Celery tasks
 - **All standard Superset dependencies**
 
@@ -156,33 +171,38 @@ The Docker image includes:
 ### Common Issues
 
 1. **Database Connection Errors**
-   - Ensure `DATABASE_URL` is correctly formatted
+   - Ensure `DATABASE_URL` is correctly formatted for PostgreSQL
    - Check if database service is running
    - Verify network connectivity
-   - **PostgreSQL**: The image includes `psycopg2-binary` for PostgreSQL support
+   - **PostgreSQL**: The image includes PostgreSQL support out of the box
 
-2. **Permission Errors**
+2. **SQLite Permission Errors (RESOLVED)**
+   - SQLite database is now stored in `/tmp/superset.db` (writable directory)
+   - No more "unable to open database file" errors
+
+3. **Permission Errors**
    - The configuration uses console-only logging to avoid file permission issues
    - Ensure proper file permissions on `bootstrap.sh`
    - Check if user has write access to mounted volumes
 
-3. **Port Issues**
+4. **Port Issues**
    - Render automatically sets the `PORT` environment variable
    - The app listens on `0.0.0.0` to accept external connections
 
-4. **Memory Issues**
+5. **Memory Issues**
    - Superset can be memory-intensive
    - Consider increasing Render's memory allocation
    - Monitor resource usage in Render dashboard
 
-5. **Logging Permission Errors (RESOLVED)**
+6. **Logging Permission Errors (RESOLVED)**
    - The configuration now uses console-only logging
    - No file logging to avoid permission issues in containerized environments
    - All logs are sent to stdout/stderr for proper container logging
 
-6. **ModuleNotFoundError: No module named 'psycopg2' (RESOLVED)**
-   - The Dockerfile now installs `psycopg2-binary` for PostgreSQL support
-   - This dependency is automatically included in the image
+7. **ModuleNotFoundError: No module named 'psycopg2' (RESOLVED)**
+   - Now using `apache/superset:latest-py310` base image
+   - PostgreSQL support is included out of the box
+   - No manual installation needed
 
 ### Logs
 

@@ -1,9 +1,5 @@
-# Start from the official Apache Superset image
+# Start from the official Apache Superset image with PostgreSQL support
 FROM apache/superset:latest-py310
-
-# Add build argument to force cache invalidation
-ARG BUILD_DATE=unknown
-ARG VCS_REF=unknown
 
 # Set environment variables
 ENV SUPERSET_ENV=production
